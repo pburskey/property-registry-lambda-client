@@ -4,8 +4,14 @@ import com.burskey.property.domain.Property;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.io.IOException;
 
 public class PropertyClient {
 
@@ -54,27 +60,40 @@ public class PropertyClient {
 
 
 
+
     public ResponseEntity save(Property property) {
 
+        ResponseEntity<String> response = null;
+        try{
+            response = this.saveClient.post()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(property)
+                    .retrieve()
+                    .toEntity(String.class);
 
-        ResponseEntity<String> response = this.saveClient.post()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(property)
-                .retrieve()
-                .toEntity(String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            // Success
-            String body = response.getBody();
-            if (body != null) {
-                property.setId(body);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Success
+                String body = response.getBody();
+                if (body != null) {
+                    property.setId(body);
+                }
+            } else {
+                // Handle error
             }
-        } else {
-            // Handle error
+
         }
-
-
+        catch (HttpClientErrorException ex) {
+            // Handle client errors (4xx)
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+        } catch (HttpServerErrorException ex) {
+            // Handle server errors (5xx)
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+        } catch (Exception ex) {
+            // Handle other exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
         return response;
+
     }
 
     public ResponseEntity findByID(String id) {

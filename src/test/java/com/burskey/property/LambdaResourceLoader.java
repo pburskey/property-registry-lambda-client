@@ -5,6 +5,7 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +19,21 @@ public class LambdaResourceLoader {
     }
 
     public enum Thing{
-        Save,
-        FindByID,
-        FindByCategoryAndName
+
+        Save("save"),
+        FindByID(""),
+        FindByCategoryAndName("find");
+
+        String extension = null;
+
+        Thing(String extension) {
+            this.extension = extension;
+        }
+
+        public String assemble(String base){
+            return base + extension;
+        }
+
 
     }
 
@@ -76,6 +89,24 @@ public class LambdaResourceLoader {
 
 
     }
+
+
+
+
+    public static LambdaResourceLoader BuildUsingBaseURI(String base){
+        Map<Thing,String> map = new HashMap<>();
+
+        if (base != null) {
+            for (Thing thing : Thing.values()) {
+                map.put(thing, thing.assemble(base));
+            }
+        }
+
+        return new LambdaResourceLoader(map);
+
+
+    }
+
 
 
 

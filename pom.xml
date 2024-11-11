@@ -81,6 +81,17 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-api-gateway</artifactId>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-apigatewayv2</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.amazonaws</groupId>

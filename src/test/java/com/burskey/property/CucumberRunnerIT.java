@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = {"pretty", "html:target/cucumber.html"}
-        , dryRun = false)
+        , dryRun = false
+//        , tags = "@me"
+)
 public class CucumberRunnerIT {
 }

@@ -1,6 +1,8 @@
 package com.burskey.property;
 
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.burskey.property.api.APIGatewayHelper;
+import com.burskey.property.api.AWSClientConfig;
 import com.burskey.property.api.PropertyClient;
 import com.burskey.property.api.UploadToS3;
 import com.burskey.property.domain.Property;
@@ -167,10 +169,15 @@ public class StepDefinitions {
     public void i_bootstrap_the_uris() {
         assertNotNull(this.stage);
 
-        LambdaResourceLoader loader = LambdaResourceLoader.Build(this.stage);
+        AWSClientConfig config = new AWSClientConfig(this.accessKey, this.secretAccessKey, this.bucketName, this.region);
+        APIGatewayHelper helper = APIGatewayHelper.With(config);
+        String baseURI = helper.constructBaseURIForEnvironment("Basic AWS Api Gateway", this.stage);
+
+        LambdaResourceLoader loader = LambdaResourceLoader.BuildUsingBaseURI(baseURI);
         this.saveURI = loader.get(LambdaResourceLoader.Thing.Save);
         this.getByIDURI = loader.get(LambdaResourceLoader.Thing.FindByID);
         this.getByCategoryAndNameURI = loader.get(LambdaResourceLoader.Thing.FindByCategoryAndName);
+
     }
 
     @Then("I have a save uri")
@@ -293,4 +300,11 @@ public class StepDefinitions {
     public void i_wait_for_seconds(Integer int1) throws Exception {
         Thread.sleep(int1 * 1000);
     }
+    @Then("the response has a message: {string}")
+    public void the_response_has_a_message(String string) {
+        assertNotNull(this.response);
+        assertEquals(string, this.response.getBody());
+    }
+
+
 }
