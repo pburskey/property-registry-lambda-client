@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'mvn verify'
+                sh 'mvn -P failsafe verify'
             }
 //             post {
 //                 always {
