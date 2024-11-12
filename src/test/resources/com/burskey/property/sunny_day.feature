@@ -37,6 +37,14 @@ Feature: Sunny Day
     And the property exists
 
 
+  Scenario: Simple Find Property By category and name - Missing category
+    When I ask the service to find a property by category and name
+      | Category | Name  |
+      |          | aName |
+    Then the service responds with status code: 400
+    Then the response has a message: "Missing category"
+
+
   Scenario: Simple Upload json to S3
     Given that I want to upload a json file containing
       | Name | Value | Description | Category |
@@ -54,7 +62,7 @@ Feature: Sunny Day
     And each property can be found using category and name
 
 
-  @me
+
   Scenario: Simple Save Empty Property
     Given that I want to save a property
       | Name | Value | Description | Category |
@@ -63,7 +71,7 @@ Feature: Sunny Day
     Then the response has a message: "Name is missing"
 
 
-  @me
+
   Scenario: Simple Save Empty Category
     Given that I want to save a property
       | Name | Value | Description | Category |
@@ -73,7 +81,7 @@ Feature: Sunny Day
     Then the response has a message: "Category is missing"
 
 
-  @me
+
   Scenario: Simple Save Empty Value
     Given that I want to save a property
       | Name | Value | Description | Category |

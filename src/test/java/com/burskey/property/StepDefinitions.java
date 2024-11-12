@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -238,6 +239,8 @@ public class StepDefinitions {
 
     @Then("each property can be found using category and name")
     public void each_property_can_be_found_using_category_and_name() throws Exception {
+
+
         assertNotNull(this.foundProperties);
         assertNotNull(this.listOfPropertiesToUpload);
         for (int i = 0; i < this.listOfPropertiesToUpload.size(); i++) {
@@ -247,6 +250,27 @@ public class StepDefinitions {
             ObjectMapper mapper = new ObjectMapper();
             Object anObject = mapper.readValue((String) (entity.getBody()), List.class);
             assertNotNull(anObject);
+
+        }
+
+    }
+    @When("I ask the service to find a property by category and name")
+    public void i_ask_the_service_to_find_a_property_by_category_and_name(io.cucumber.datatable.DataTable dataTable) throws Exception {
+        if (dataTable != null && !dataTable.isEmpty()) {
+
+
+            List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+
+            for (Map<String, String> columns : rows) {
+
+                ResponseEntity entity = client.findByCategoryAndName(columns.get("Category"), columns.get("Name"));
+                this.response = entity;
+                if (entity != null && entity.getBody() != null && entity.getStatusCode().equals(HttpStatus.OK)) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    this.property = (Property) mapper.readValue((String) (entity.getBody()), List.class);
+                }
+
+            }
 
         }
     }
@@ -288,18 +312,22 @@ public class StepDefinitions {
     public void an_environment_provided_aws_bucket_name() {
         this.bucketName = System.getenv("AWS_BUCKET_NAME");
     }
+
     @Given("an environment provided IAM Access Key")
     public void an_environment_provided_iam_access_key() {
         this.accessKey = System.getenv("AWS_ACCESS_KEY");
     }
+
     @Given("an environment provided IAM Secret Access Key")
     public void an_environment_provided_iam_secret_access_key() {
         this.secretAccessKey = System.getenv("AWS_SECRET_ACCESS_KEY");
     }
+
     @When("I wait for {int} seconds")
     public void i_wait_for_seconds(Integer int1) throws Exception {
         Thread.sleep(int1 * 1000);
     }
+
     @Then("the response has a message: {string}")
     public void the_response_has_a_message(String string) {
         assertNotNull(this.response);
