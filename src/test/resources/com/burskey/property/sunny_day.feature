@@ -38,8 +38,6 @@ Feature: Sunny Day
 
 
   Scenario: Simple Upload json to S3
-    Given an AWS Region: "us-east-2"
-
     Given that I want to upload a json file containing
       | Name | Value | Description | Category |
       | a    | 1     | a1          | test     |
