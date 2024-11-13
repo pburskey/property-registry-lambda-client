@@ -14,7 +14,6 @@ public class PropertyClient {
 
     private RestClient getByNameAndCategoryClient;
     private RestClient saveClient;
-    private RestClient getByIDClient;
 
 
     public static PropertyClient Builder() {
@@ -28,15 +27,6 @@ public class PropertyClient {
         return this;
     }
 
-    public PropertyClient withGetByID(String aURI) {
-
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(aURI);
-
-        RestClient restClient = RestClient.builder().uriBuilderFactory(factory).build();
-        this.getByIDClient = restClient;
-
-        return this;
-    }
 
 
     public PropertyClient withGetByCategoryAndName(String aURI) {
@@ -64,9 +54,7 @@ public class PropertyClient {
             if (response.getStatusCode() == HttpStatus.OK) {
                 // Success
                 String body = response.getBody();
-                if (body != null) {
-                    property.setId(body);
-                }
+
             } else {
                 // Handle error
             }
@@ -83,28 +71,6 @@ public class PropertyClient {
         }
         return response;
 
-    }
-
-    public ResponseEntity findByID(String id) {
-        ResponseEntity<String> response = null;
-        try {
-            response = this.getByIDClient
-                    .get()
-                    .uri("{id}", id)
-                    .retrieve()
-                    .toEntity(String.class);
-        } catch (HttpClientErrorException ex) {
-            // Handle client errors (4xx)
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
-        } catch (HttpServerErrorException ex) {
-            // Handle server errors (5xx)
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
-        } catch (Exception ex) {
-            // Handle other exceptions
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
-        }
-
-        return response;
     }
 
     public ResponseEntity findByCategoryAndName(String category, String name) {
