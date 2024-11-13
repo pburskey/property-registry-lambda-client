@@ -108,11 +108,6 @@ public class StepDefinitions {
         assertEquals(int1, Integer.valueOf(status));
     }
 
-    @Then("the property has an id")
-    public void the_property_has_an_id() {
-        assertNotNull(this.property.getId());
-    }
-
 
     @Given("a saved property")
     public void a_saved_property() {
@@ -125,13 +120,7 @@ public class StepDefinitions {
         this.i_ask_the_service_to_save_the_property();
     }
 
-    @When("I ask the service to find the property by ID")
-    public void i_ask_the_service_to_find_the_property_by_id() throws JsonProcessingException {
 
-        this.response = client.findByID(this.property.getId());
-        ObjectMapper mapper = new ObjectMapper();
-        this.property = mapper.readValue((String) (this.response.getBody()), Property.class);
-    }
 
     @Then("the property exists")
     public void the_property_exists() {
@@ -141,22 +130,25 @@ public class StepDefinitions {
     @When("I ask the service to find the property by category and name")
     public void i_ask_the_service_to_find_the_property_by_category_and_name() throws JsonProcessingException {
         this.response = client.findByCategoryAndName(this.property.getCategory(), this.property.getName());
-        ObjectMapper mapper = new ObjectMapper();
-        Object anObject = mapper.readValue((String) (this.response.getBody()), List.class);
-        if (anObject != null) {
-            List aList = (List) anObject;
-            for (Object o : aList) {
-                Map aMap = (Map) o;
-                this.property = mapper.convertValue(aMap, Property.class);
+        if (this.response != null && this.response.getStatusCode() == HttpStatus.OK)
+        {
+            ObjectMapper mapper = new ObjectMapper();
+            Object anObject = mapper.readValue((String) (this.response.getBody()), List.class);
+            if (anObject != null ) {
+                List aList = (List) anObject;
+                for (Object o : aList) {
+                    Map aMap = (Map) o;
+                    this.property = mapper.convertValue(aMap, Property.class);
+                }
             }
         }
+
     }
 
     @Given("an AWS Client")
     public void an_aws_client() {
         PropertyClient client = PropertyClient.Builder()
                 .withSave(this.saveURI)
-                .withGetByID(this.getByIDURI)
                 .withGetByCategoryAndName(this.getByCategoryAndNameURI);
         this.client = client;
     }

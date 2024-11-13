@@ -11,9 +11,9 @@ Feature: Sunny Day
     Given an AWS Region: "us-east-2"
     When I bootstrap the URIs
     Then I have a save uri
-    Then I have a find by id uri
     Then I have a find by category and name uri
     Given an AWS Client
+
 
   Scenario: Simple Save Property
     Given that I want to save a property
@@ -21,21 +21,12 @@ Feature: Sunny Day
       | aName | aValue | aDescription | aCategory |
     When I ask the service to save the property
     Then the service responds with status code: 200
-    And the property has an id
-
-
-  Scenario: Simple Find Property By ID
-    Given a saved property
-    When I ask the service to find the property by ID
-    Then the service responds with status code: 200
-    And the property exists
 
   Scenario: Simple Find Property By category and name
     Given a saved property
     When I ask the service to find the property by category and name
     Then the service responds with status code: 200
     And the property exists
-
 
   Scenario: Simple Find Property By category and name - Missing category
     When I ask the service to find a property by category and name
